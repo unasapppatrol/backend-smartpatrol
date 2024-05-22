@@ -11,9 +11,9 @@ import posRouter from "./routes/pos-router.js";
 import activityRouter from "./routes/activity-router.js";
 import atensiRouter from "./routes/atensi-router.js";
 
+const app = express();
 const PORT = process.env.PORT || 8083;
 dotenv.config();
-const app = express();
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -39,3 +39,5 @@ mongoose
   .catch((err) => {
     console.log("Cannot connect to mongodb : ", err);
   });
+
+export default app;
