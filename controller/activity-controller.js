@@ -1,6 +1,14 @@
 import Activity from "../model/Activity.js";
 import authorize from "../googleAuth.js";
 import uploadFile from "../googleDrive.js";
+import {
+  sendNotification,
+  createNotificationMessage,
+  saveToken,
+  getAllTokens,
+} from "../service/Notification.js";
+const iconApp =
+  "https://bsdm.unas.ac.id/wp-content/uploads/2022/01/Logo-UNAS-Universitas-Nasional-Original-PNG-1.png";
 
 export const createActivity = async (req, res, next) => {
   try {
@@ -32,6 +40,18 @@ export const createActivity = async (req, res, next) => {
       image: imageArray,
     });
     await newActivity.save();
+
+    const expoPushToken = getAllTokens();
+
+    const messages = createNotificationMessage(
+      expoPushToken,
+      "Ada aktivitas baru!",
+      `Aktivitas baru telah dibuat oleh ${nama_lengkap} di ${pos_aktivitas}`,
+      iconApp
+    );
+
+    await sendNotification(messages);
+
     if (!newActivity) {
       return res.json({ message: "terjadi Kesalahan" });
     }
@@ -105,5 +125,15 @@ export const deleteActivity = async (req, res, next) => {
     res.status(201).json({ message: "Activity has been deleted!" });
   } catch (error) {
     res.status(404).json({ message: "Data not found!" });
+  }
+};
+
+export const savePushToken = (req, res) => {
+  const { token } = req.body;
+  try {
+    saveToken(token);
+    res.send("Token saved successfully");
+  } catch (error) {
+    res.status(400).send(error.message);
   }
 };

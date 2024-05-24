@@ -5,6 +5,7 @@ import {
   getAllActivities,
   getUserActivity,
   updateAktivitas,
+  savePushToken,
 } from "../controller/activity-controller.js";
 import express from "express";
 import path from "path";
@@ -32,5 +33,6 @@ Router.get("/instansi", getAllActivities);
 Router.get("/user/:id", getUserActivity);
 Router.put("/:id", updateAktivitas);
 Router.delete("/:id", deleteActivity);
+Router.post("/save-token", savePushToken);
 
 export default Router;

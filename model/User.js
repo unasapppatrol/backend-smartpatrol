@@ -21,10 +21,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    nik: {
-      type: String,
-      unique: true,
-    },
     domisili: {
       type: String,
     },

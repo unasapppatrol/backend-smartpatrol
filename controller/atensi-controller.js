@@ -1,4 +1,12 @@
 import Atensi from "../model/Atensi.js";
+import {
+  sendNotification,
+  createNotificationMessage,
+  saveToken,
+  getAllTokens,
+} from "../service/Notification.js";
+const iconApp =
+  "https://bsdm.unas.ac.id/wp-content/uploads/2022/01/Logo-UNAS-Universitas-Nasional-Original-PNG-1.png";
 
 //POST ATENSI
 export const createAtensi = async (req, res) => {
@@ -6,6 +14,7 @@ export const createAtensi = async (req, res) => {
     const {
       userId,
       username,
+      nama_lengkap,
       judul_atensi,
       tanggal_mulai,
       tanggal_selesai,
@@ -15,19 +24,31 @@ export const createAtensi = async (req, res) => {
     if (!userId || !judul_atensi || !tanggal_mulai || !tanggal_selesai) {
       return res.status(400).json({ error: "Semua bidang wajib diisi" });
     }
-    const newAbsensi = new Atensi({
+    const newAtensi = new Atensi({
       userId,
       username,
+      nama_lengkap,
       judul_atensi,
       tanggal_mulai,
       tanggal_selesai,
       catatan,
     });
 
-    await newAbsensi.save();
+    await newAtensi.save();
+
+    const expoPushToken = getAllTokens();
+
+    const messages = createNotificationMessage(
+      expoPushToken,
+      "Ada atensi baru!",
+      `${nama_lengkap} telah membuat atensi baru. Klik untuk melihat detailnya.`,
+      iconApp
+    );
+    await sendNotification(messages);
 
     res.status(201).json({ message: "Atensi berhasil dibuat" });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: "Gagal membuat atensi" });
   }
 };
@@ -93,5 +114,15 @@ export const deleteAtensi = async (req, res) => {
     res.status(204).json({ message: "Atensi telah dihapus" });
   } catch (error) {
     res.status(500).json({ error: "Gagal menghapus data atensi" });
+  }
+};
+
+export const savePushToken = (req, res) => {
+  const { token } = req.body;
+  try {
+    saveToken(token);
+    res.send("Token saved successfully");
+  } catch (error) {
+    res.status(400).send(error.message);
   }
 };
