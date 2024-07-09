@@ -7,6 +7,7 @@ import {
   saveToken,
   getAllTokens,
 } from "../service/Notification.js";
+import { Broadcast } from "../service/Socket.js";
 const iconApp =
   "https://bsdm.unas.ac.id/wp-content/uploads/2022/01/Logo-UNAS-Universitas-Nasional-Original-PNG-1.png";
 
@@ -51,6 +52,12 @@ export const createActivity = async (req, res, next) => {
     );
 
     await sendNotification(messages);
+
+    // Broadcast("new-Activity", {
+    //   title: "Patroli Baru Ditetapkan!",
+    //   message: `${nama_lengkap} telah membuat patroli baru di ${lokasi_pos}. Klik untuk melihat detailnya.`,
+    //   icon: iconApp,
+    // });
 
     if (!newActivity) {
       return res.json({ message: "terjadi Kesalahan" });
